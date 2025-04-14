@@ -1,0 +1,11 @@
+agno
+python-dotenv
+duckduckgo-search
+sqlalchemy
+python-whois
+dnspython
+firecrawl-py
+google-generativeai>=0.7.0
+pillow
+requests
+termcolor

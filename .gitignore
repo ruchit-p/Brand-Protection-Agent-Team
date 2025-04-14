@@ -1,0 +1,8 @@
+.venv
+.env
+
+storage
+qdrant_storage
+mydata
+__pycache__
+tmp
