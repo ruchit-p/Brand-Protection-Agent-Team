@@ -11,6 +11,7 @@ import tempfile
 import uuid
 from typing import Dict, List, Any, Optional, Tuple
 from agno.tools import Toolkit
+from config import get_storage_dir
 
 try:
     from firecrawl import FirecrawlApp
@@ -65,7 +66,7 @@ class FirecrawlTools(Toolkit):
         self.session_id = session_id or str(uuid.uuid4())
         
         # Initialize the session directory in storage
-        self.storage_dir = "/Users/ruchitpatel/Projects/agnoagent/storage"
+        self.storage_dir = get_storage_dir()
         self.session_dir = os.path.join(self.storage_dir, f"session_{self.session_id}")
         self.image_dir = os.path.join(self.session_dir, "images")
         os.makedirs(self.session_dir, exist_ok=True)

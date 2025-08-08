@@ -14,6 +14,7 @@ from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.storage.agent.sqlite import SqliteAgentStorage
 from file_toolkit import FileTools
 from dmca_report_tool import DmcaReportTools
+from config import get_storage_dir, get_tmp_dir
 
 # Load environment variables
 load_dotenv()
@@ -25,8 +26,8 @@ class DmcaReportAgent(Agent):
     """
     
     def __init__(self):
-        # Ensure storage directory exists
-        storage_dir = "/Users/ruchitpatel/Projects/agnoagent/storage"
+        # Ensure storage directory exists (configurable)
+        storage_dir = get_storage_dir()
         os.makedirs(storage_dir, exist_ok=True)
         
         super().__init__(
@@ -37,12 +38,12 @@ class DmcaReportAgent(Agent):
                 # Add DMCA-specific tools
                 DmcaReportTools(storage_directory=storage_dir),
                 # Add file tools for reading/writing files
-                FileTools()  # This will use the hardcoded storage directory
+                FileTools(base_directory=storage_dir)
             ],
             # Add memory using SQLite storage
             storage=SqliteAgentStorage(
                 table_name="dmca_agent_sessions",
-                db_file="tmp/agent_storage.db"
+                db_file=os.path.join(get_tmp_dir(), "agent_storage.db")
             ),
             # Add conversation history to each message
             add_history_to_messages=True,
@@ -120,7 +121,7 @@ def main():
     print(colored("💬 Type ", "yellow") + colored("'exit'", "red") + colored(" to quit", "yellow"))
     print(colored("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", "red"))
     print(colored(f"Session ID: {agent.session_id}", "magenta"))
-    print(colored(f"Storage directory: /Users/ruchitpatel/Projects/agnoagent/storage", "magenta"))
+    print(colored(f"Storage directory: {get_storage_dir()}", "magenta"))
     print()
     print(colored("How to use: Provide details about copyright infringement, and I'll help you create a proper DMCA takedown notice.", "white"))
     print()

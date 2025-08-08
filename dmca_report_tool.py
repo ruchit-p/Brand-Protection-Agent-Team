@@ -12,6 +12,7 @@ import re
 from datetime import datetime
 from typing import Dict, Optional, Any, List
 from agno.tools import Toolkit
+from config import get_storage_dir
 
 class DmcaReportTools(Toolkit):
     """
@@ -28,7 +29,7 @@ class DmcaReportTools(Toolkit):
         super().__init__(name="dmca_report_tools")
         
         # Set storage directory for reports
-        self.storage_directory = storage_directory or "/Users/ruchitpatel/Projects/agnoagent/storage"
+        self.storage_directory = storage_directory or get_storage_dir()
         
         # Create the storage directory if it doesn't exist
         os.makedirs(self.storage_directory, exist_ok=True)

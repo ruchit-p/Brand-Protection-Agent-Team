@@ -12,6 +12,7 @@ import csv
 import datetime
 from typing import List, Dict, Any, Optional
 from agno.tools import Toolkit
+from config import get_storage_dir
 
 class FileTools(Toolkit):
     """
@@ -28,10 +29,10 @@ class FileTools(Toolkit):
                            (defaults to storage directory if None)
         """
         super().__init__(name="file_tools")
-        
-        # Set base directory for file operations - hardcoded to the storage folder
-        self.base_directory = "/Users/ruchitpatel/Projects/agnoagent/storage"
-        
+
+        # Determine base directory: honor provided value, otherwise use STORAGE_DIR or project storage
+        self.base_directory = base_directory or get_storage_dir()
+
         # Create the base directory if it doesn't exist
         os.makedirs(self.base_directory, exist_ok=True)
         

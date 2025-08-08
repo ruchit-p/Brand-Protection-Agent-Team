@@ -10,6 +10,7 @@ from domain_intelligence_tool import domain_intelligence
 from firecrawl_tool import FirecrawlTools
 from image_analyzer import ImageAnalyzerTools
 from file_toolkit import FileTools
+from config import get_storage_dir, get_tmp_dir
 
 # Load environment variables
 load_dotenv()
@@ -17,8 +18,8 @@ load_dotenv()
 # Define the brand protection agent
 class BrandProtectionAgent(Agent):
     def __init__(self):
-        # Ensure storage directory exists
-        storage_dir = "/Users/ruchitpatel/Projects/agnoagent/storage"
+        # Ensure storage directory exists (configurable)
+        storage_dir = get_storage_dir()
         os.makedirs(storage_dir, exist_ok=True)
         
         super().__init__(
@@ -39,12 +40,12 @@ class BrandProtectionAgent(Agent):
                 # Add image analysis tools using Gemini 2.0 Flash
                 ImageAnalyzerTools(),
                 # Add file tools for reading/writing files
-                FileTools()  # This will use the hardcoded storage directory
+                FileTools(base_directory=storage_dir)
             ],
             # Add memory using SQLite storage
             storage=SqliteAgentStorage(
                 table_name="brand_agent_sessions",
-                db_file="tmp/agent_storage.db"
+                db_file=os.path.join(get_tmp_dir(), "agent_storage.db")
             ),
             # Add conversation history to each message
             add_history_to_messages=True,
@@ -74,9 +75,10 @@ class BrandProtectionAgent(Agent):
 
 # Create the tmp directory if it doesn't exist
 def ensure_tmp_directory():
-    if not os.path.exists("tmp"):
-        os.makedirs("tmp")
-        print("Created 'tmp' directory for agent storage.")
+    tmp_dir = get_tmp_dir()
+    if not os.path.exists(tmp_dir):
+        os.makedirs(tmp_dir, exist_ok=True)
+        print(f"Created tmp directory for agent storage at {tmp_dir}.")
 
 # Format and print tool call information
 def print_tool_call(tool_name, tool_args):
@@ -129,7 +131,7 @@ def main():
     print(colored("💬 Type ", "yellow") + colored("'exit'", "red") + colored(" to quit", "yellow"))
     print(colored("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", "blue"))
     print(colored(f"Session ID: {agent.session_id}", "magenta"))
-    print(colored(f"Storage directory: /Users/ruchitpatel/Projects/agnoagent/storage", "magenta"))
+    print(colored(f"Storage directory: {get_storage_dir()}", "magenta"))
     print()
     
     # Main conversation loop

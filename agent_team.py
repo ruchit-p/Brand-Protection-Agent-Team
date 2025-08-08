@@ -23,12 +23,13 @@ from file_toolkit import FileTools
 from dmca_report_tool import DmcaReportTools
 from brand_analysis_report import BrandAnalysisReportGenerator
 from agno.tools import Toolkit
+from config import get_storage_dir, get_tmp_dir
 
 # Load environment variables
 load_dotenv()
 
-# Create the tmp directory for database storage
-os.makedirs("tmp", exist_ok=True)
+# Create the tmp directory for database storage (configurable)
+os.makedirs(get_tmp_dir(), exist_ok=True)
 
 class HandoffTools(Toolkit):
     """
@@ -45,7 +46,7 @@ class HandoffTools(Toolkit):
         """
         super().__init__(name="handoff_tools")
         self.storage_dir = storage_dir
-        self.dmca_agent_path = dmca_agent_path or "/Users/ruchitpatel/Projects/agnoagent/dmca_agent.py"
+        self.dmca_agent_path = dmca_agent_path or os.path.join(os.path.dirname(__file__), "dmca_agent.py")
         
         # Register handoff functions
         self.register(self.handoff_to_dmca_agent)
@@ -152,7 +153,7 @@ class EnhancedBrandProtectionAgent(Agent):
         self.session_id = session_id or str(uuid.uuid4())
         
         # Create session-specific storage directory
-        self.storage_dir = "/Users/ruchitpatel/Projects/agnoagent/storage"
+        self.storage_dir = get_storage_dir()
         self.session_dir = os.path.join(self.storage_dir, f"session_{self.session_id}")
         os.makedirs(self.session_dir, exist_ok=True)
         
@@ -183,7 +184,7 @@ class EnhancedBrandProtectionAgent(Agent):
             ],
             storage=SqliteAgentStorage(
                 table_name="brand_agent_sessions",
-                db_file="tmp/agent_storage.db"
+                db_file=os.path.join(get_tmp_dir(), "agent_storage.db")
             ),
             add_history_to_messages=True,
             num_history_responses=5,
@@ -241,7 +242,7 @@ class EnhancedDmcaReportAgent(Agent):
         self.session_id = session_id or str(uuid.uuid4())
         
         # Create session-specific storage directory
-        self.storage_dir = "/Users/ruchitpatel/Projects/agnoagent/storage"
+        self.storage_dir = get_storage_dir()
         self.session_dir = os.path.join(self.storage_dir, f"session_{self.session_id}")
         os.makedirs(self.session_dir, exist_ok=True)
         
@@ -255,7 +256,7 @@ class EnhancedDmcaReportAgent(Agent):
             ],
             storage=SqliteAgentStorage(
                 table_name="dmca_agent_sessions",
-                db_file="tmp/agent_storage.db"
+                db_file=os.path.join(get_tmp_dir(), "agent_storage.db")
             ),
             add_history_to_messages=True,
             num_history_responses=5,
@@ -340,7 +341,7 @@ def run_brand_protection_agent():
     agent = EnhancedBrandProtectionAgent(session_id=session_id)
     
     # Create session directory path
-    session_dir = os.path.join("/Users/ruchitpatel/Projects/agnoagent/storage", f"session_{session_id}")
+    session_dir = os.path.join(get_storage_dir(), f"session_{session_id}")
     
     # Print welcome message
     print(colored("🔍 Brand Protection Agent", "blue", attrs=["bold"]))
@@ -415,7 +416,7 @@ def run_dmca_report_agent(session_id=None):
     agent = EnhancedDmcaReportAgent(session_id=session_id)
     
     # Get session directory path
-    session_dir = os.path.join("/Users/ruchitpatel/Projects/agnoagent/storage", f"session_{session_id}")
+    session_dir = os.path.join(get_storage_dir(), f"session_{session_id}")
     
     # Print welcome message
     print(colored("📝 DMCA Report Writer", "red", attrs=["bold"]))
