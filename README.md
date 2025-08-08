@@ -111,7 +111,7 @@ Security & privacy
 
 - Do not commit secrets. Use .env (already gitignored). See SECURITY.md for reporting vulnerabilities.
 - This repository does not transmit user data except to configured third‑party services (Firecrawl, Google Generative AI) when tools are invoked.
- - Code of Conduct: see CODE_OF_CONDUCT.md
+- Code of Conduct: see CODE_OF_CONDUCT.md
 
 Limitations
 
